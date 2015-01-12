@@ -3,6 +3,7 @@ use std::fmt;
 use header;
 use header::shared;
 use method::Method;
+use context::HttpContext;
 
 #[derive(Clone)]
 struct AccessControlRequestMethod(pub Method);
@@ -13,7 +14,7 @@ impl header::Header for AccessControlRequestMethod {
         "Access-Control-Request-Method"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<AccessControlRequestMethod> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<AccessControlRequestMethod> {
         shared::from_one_raw_str(raw).map(AccessControlRequestMethod)
     }
 }

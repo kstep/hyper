@@ -2,6 +2,7 @@ use header::{Header, HeaderFormat};
 use std::fmt;
 use std::str::FromStr;
 use header::shared::util::{from_comma_delimited, fmt_comma_delimited};
+use context::HttpContext;
 
 use self::Encoding::{Chunked, Gzip, Deflate, Compress, EncodingExt};
 
@@ -82,7 +83,7 @@ impl Header for TransferEncoding {
         "Transfer-Encoding"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<TransferEncoding> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<TransferEncoding> {
         from_comma_delimited(raw).map(TransferEncoding)
     }
 }

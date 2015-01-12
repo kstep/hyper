@@ -2,6 +2,7 @@ use header::{Header, HeaderFormat};
 use std::fmt::{self, String};
 use header::shared::util::from_one_raw_str;
 use mime::Mime;
+use context::HttpContext;
 
 /// The `Content-Type` header.
 ///
@@ -17,7 +18,7 @@ impl Header for ContentType {
         "Content-Type"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<ContentType> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<ContentType> {
         from_one_raw_str(raw).map(|mime| ContentType(mime))
     }
 }

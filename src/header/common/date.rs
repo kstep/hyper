@@ -4,6 +4,7 @@ use time::Tm;
 use header::{Header, HeaderFormat};
 use header::shared::util::from_one_raw_str;
 use header::shared::time::tm_from_str;
+use context::HttpContext;
 
 // Egh, replace as soon as something better than time::Tm exists.
 /// The `Date` header field.
@@ -17,7 +18,7 @@ impl Header for Date {
         "Date"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Date> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Date> {
         from_one_raw_str(raw)
     }
 }

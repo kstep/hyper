@@ -2,6 +2,7 @@ use std::fmt;
 use std::str::FromStr;
 use header::{Header, HeaderFormat};
 use header::shared::util::{from_one_comma_delimited, fmt_comma_delimited};
+use context::HttpContext;
 
 /// The Cache-Control header.
 #[derive(PartialEq, Clone, Show)]
@@ -14,7 +15,7 @@ impl Header for CacheControl {
         "Cache-Control"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<CacheControl> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<CacheControl> {
         let directives = raw.iter()
             .filter_map(|line| from_one_comma_delimited(&line[]))
             .collect::<Vec<Vec<CacheDirective>>>()

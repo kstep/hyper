@@ -1,6 +1,7 @@
 use header::{Header, HeaderFormat};
 use std::fmt::{self};
 use header::shared::util::from_one_raw_str;
+use context::HttpContext;
 
 /// The `Etag` header.
 ///
@@ -21,7 +22,7 @@ impl Header for Etag {
         "Etag"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Etag> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Etag> {
         // check that each char in the slice is either:
         // 1. %x21, or
         // 2. in the range %x23 to %x7E, or

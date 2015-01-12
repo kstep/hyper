@@ -2,6 +2,7 @@ use std::fmt;
 
 use header;
 use header::shared;
+use context::HttpContext;
 
 #[derive(Clone)]
 struct AccessControlMaxAge(pub u32);
@@ -12,7 +13,7 @@ impl header::Header for AccessControlMaxAge {
         "Access-Control-Max-Age"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<AccessControlMaxAge> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<AccessControlMaxAge> {
         shared::from_one_raw_str(raw).map(AccessControlMaxAge)
     }
 }

@@ -1,4 +1,5 @@
 use header::{Header, HeaderFormat};
+use context::HttpContext;
 use std::fmt;
 use std::str::from_utf8;
 
@@ -23,7 +24,7 @@ impl Header for Cookies {
         "Cookie"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Cookies> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Cookies> {
         let mut cookies = Vec::with_capacity(raw.len());
         for cookies_raw in raw.iter() {
             match from_utf8(&cookies_raw[]) {

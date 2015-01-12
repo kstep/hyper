@@ -3,6 +3,7 @@ use std::fmt::{self};
 use header;
 use header::shared;
 use method;
+use context::HttpContext;
 
 #[derive(Clone)]
 struct AccessControlAllowMethods(pub Vec<method::Method>);
@@ -13,7 +14,7 @@ impl header::Header for AccessControlAllowMethods {
         "Access-Control-Allow-Methods"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<AccessControlAllowMethods> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<AccessControlAllowMethods> {
         shared::from_comma_delimited(raw).map(AccessControlAllowMethods)
     }
 }

@@ -2,6 +2,7 @@ use header::{Header, HeaderFormat};
 use std::fmt::{self, Show};
 use std::str::FromStr;
 use header::shared::util::{from_comma_delimited, fmt_comma_delimited};
+use context::HttpContext;
 
 use self::Protocol::{WebSocket, ProtocolExt};
 
@@ -49,7 +50,7 @@ impl Header for Upgrade {
         "Upgrade"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Upgrade> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Upgrade> {
         from_comma_delimited(raw).map(|vec| Upgrade(vec))
     }
 }

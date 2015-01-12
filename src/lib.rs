@@ -139,6 +139,7 @@ extern crate unicase;
 pub use std::io::net::ip::{SocketAddr, IpAddr, Ipv4Addr, Ipv6Addr, Port};
 pub use mimewrapper::mime;
 pub use url::Url;
+pub use context::HttpContext;
 pub use client::Client;
 pub use method::Method::{Get, Head, Post, Delete};
 pub use status::StatusCode::{Ok, BadRequest, NotFound};

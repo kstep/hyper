@@ -4,6 +4,7 @@ use std::fmt::{self};
 use std::str;
 
 use header;
+use context::HttpContext;
 
 #[derive(Clone)]
 enum AccessControlAllowOrigin {
@@ -17,7 +18,7 @@ impl header::Header for AccessControlAllowOrigin {
         "Access-Control-Allow-Origin"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<AccessControlAllowOrigin> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<AccessControlAllowOrigin> {
         if raw.len() == 1 {
             match str::from_utf8(unsafe { &raw[].get_unchecked(0)[] }) {
                 Ok(s) => {

@@ -2,6 +2,7 @@ use std::fmt;
 
 use header;
 use header::shared;
+use context::HttpContext;
 
 use mime;
 
@@ -35,7 +36,7 @@ impl header::Header for Accept {
         "Accept"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Accept> {
+    fn parse_header(raw: &[Vec<u8>], _: &HttpContext) -> Option<Accept> {
         // TODO: Return */* if no value is given.
         shared::from_comma_delimited(raw).map(Accept)
     }
@@ -49,9 +50,18 @@ impl header::HeaderFormat for Accept {
 
 bench_header!(bench, Accept, { vec![b"text/plain; q=0.5, text/html".to_vec()] });
 
+#[cfg(test)]
+struct DummyContext(header::Headers);
+
+#[cfg(test)]
+impl context::HttpContext for DummyContext {
+    fn base_url(&self) -> Option<&url::Url> { None }
+    fn headers(&self) -> &header::Headers { &self.0 }
+}
+
 #[test]
 fn test_parse_header_no_quality() {
-    let a: Accept = header::Header::parse_header([b"text/plain; charset=utf-8".to_vec()].as_slice()).unwrap();
+    let a: Accept = header::Header::parse_header([b"text/plain; charset=utf-8".to_vec()].as_slice(), &DummyContext(header::Headers::new())).unwrap();
     let b = Accept(vec![
         shared::QualityItem{item: mime::Mime(mime::TopLevel::Text, mime::SubLevel::Plain, vec![(mime::Attr::Charset, mime::Value::Utf8)]), quality: 1f32},
     ]);

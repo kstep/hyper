@@ -1,6 +1,7 @@
 use header::{Header, HeaderFormat};
 use std::fmt::{self, Show};
 use header::shared::util::from_one_raw_str;
+use context::HttpContext;
 
 /// The `User-Agent` header field.
 ///
@@ -15,7 +16,7 @@ impl Header for UserAgent {
         "User-Agent"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<UserAgent> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<UserAgent> {
         from_one_raw_str(raw).map(|s| UserAgent(s))
     }
 }

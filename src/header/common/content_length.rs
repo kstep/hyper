@@ -2,6 +2,7 @@ use std::fmt;
 
 use header::{Header, HeaderFormat};
 use header::shared::util::from_one_raw_str;
+use context::HttpContext;
 
 /// The `Content-Length` header.
 ///
@@ -16,7 +17,7 @@ impl Header for ContentLength {
         "Content-Length"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<ContentLength> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<ContentLength> {
         from_one_raw_str(raw).map(|u| ContentLength(u))
     }
 }

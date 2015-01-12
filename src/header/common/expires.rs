@@ -4,6 +4,7 @@ use time::Tm;
 use header::{Header, HeaderFormat};
 use header::shared::util::from_one_raw_str;
 use header::shared::time::tm_from_str;
+use context::HttpContext;
 
 /// The `Expires` header field.
 #[derive(Copy, PartialEq, Clone)]
@@ -16,7 +17,7 @@ impl Header for Expires {
         "Expires"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Expires> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Expires> {
         from_one_raw_str(raw)
     }
 }

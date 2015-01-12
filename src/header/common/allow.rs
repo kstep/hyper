@@ -2,6 +2,7 @@ use header::{Header, HeaderFormat};
 use method::Method;
 use std::fmt::{self};
 use header::shared::util::{from_comma_delimited, fmt_comma_delimited};
+use context::HttpContext;
 
 /// The `Allow` header.
 /// See also https://tools.ietf.org/html/rfc7231#section-7.4.1
@@ -16,7 +17,7 @@ impl Header for Allow {
         "Allow"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Allow> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Allow> {
         from_comma_delimited(raw).map(|vec| Allow(vec))
     }
 }

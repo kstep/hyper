@@ -2,6 +2,7 @@ use std::fmt;
 
 use header;
 use header::shared;
+use context::HttpContext;
 
 /// The `Accept-Encoding` header
 ///
@@ -17,7 +18,7 @@ impl header::Header for AcceptEncoding {
         "AcceptEncoding"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<AcceptEncoding> {
+    fn parse_header(raw: &[Vec<u8>], _: &HttpContext) -> Option<AcceptEncoding> {
         shared::from_comma_delimited(raw).map(AcceptEncoding)
     }
 }

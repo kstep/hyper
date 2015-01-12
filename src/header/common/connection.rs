@@ -2,6 +2,7 @@ use header::{Header, HeaderFormat};
 use std::fmt::{self, Show};
 use std::str::FromStr;
 use header::shared::util::{from_comma_delimited, fmt_comma_delimited};
+use context::HttpContext;
 
 pub use self::ConnectionOption::{KeepAlive, Close, ConnectionHeader};
 
@@ -60,7 +61,7 @@ impl Header for Connection {
         "Connection"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Connection> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Connection> {
         from_comma_delimited(raw).map(|vec| Connection(vec))
     }
 }

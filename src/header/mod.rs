@@ -20,6 +20,7 @@ use std::{mem, raw};
 use mucell::MuCell;
 use uany::{UnsafeAnyExt};
 use unicase::UniCase;
+use context::HttpContext;
 
 use {http, HttpResult};
 
@@ -50,7 +51,7 @@ pub trait Header: Clone + Any + Send + Sync {
     /// it's not necessarily the case that a Header is *allowed* to have more
     /// than one field value. If that's the case, you **should** return `None`
     /// if `raw.len() > 1`.
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Self>;
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Self>;
 
 }
 
@@ -208,8 +209,8 @@ impl Headers {
     }
 
     /// Get a reference to the header field's value, if it exists.
-    pub fn get<H: Header + HeaderFormat>(&self) -> Option<&H> {
-        self.get_or_parse::<H>().map(|item| {
+    pub fn get<H: Header + HeaderFormat, C: HttpContext>(&self, ctx: &C) -> Option<&H> {
+        self.get_or_parse::<H, C>(ctx).map(|item| {
             unsafe {
                 mem::transmute::<&H, &H>(downcast(&*item.borrow()))
             }
@@ -217,18 +218,18 @@ impl Headers {
     }
 
     /// Get a mutable reference to the header field's value, if it exists.
-    pub fn get_mut<H: Header + HeaderFormat>(&mut self) -> Option<&mut H> {
-        self.get_or_parse_mut::<H>().map(|item| {
+    pub fn get_mut<H: Header + HeaderFormat, C: HttpContext>(&mut self, ctx: &C) -> Option<&mut H> {
+        self.get_or_parse_mut::<H, C>(ctx).map(|item| {
             unsafe { downcast_mut(item.borrow_mut()) }
         })
     }
 
-    fn get_or_parse<H: Header + HeaderFormat>(&self) -> Option<&MuCell<Item>> {
-        self.data.get(&UniCase(Borrowed(header_name::<H>()))).and_then(get_or_parse::<H>)
+    fn get_or_parse<H: Header + HeaderFormat, C: HttpContext>(&self, ctx: &C) -> Option<&MuCell<Item>> {
+        self.data.get(&UniCase(Borrowed(header_name::<H>()))).and_then(|ref h| get_or_parse::<H, C>(h, ctx))
     }
 
-    fn get_or_parse_mut<H: Header + HeaderFormat>(&mut self) -> Option<&mut MuCell<Item>> {
-        self.data.get_mut(&UniCase(Borrowed(header_name::<H>()))).and_then(get_or_parse_mut::<H>)
+    fn get_or_parse_mut<H: Header + HeaderFormat, C: HttpContext>(&mut self, ctx: &C) -> Option<&mut MuCell<Item>> {
+        self.data.get_mut(&UniCase(Borrowed(header_name::<H>()))).and_then(|ref mut h| get_or_parse_mut::<H, C>(h, ctx))
     }
 
     /// Returns a boolean of whether a certain header is in the map.
@@ -389,7 +390,7 @@ impl Item {
 
 }
 
-fn get_or_parse<H: Header + HeaderFormat>(item: &MuCell<Item>) -> Option<&MuCell<Item>> {
+fn get_or_parse<H: Header + HeaderFormat, C: HttpContext>(item: &MuCell<Item>, ctx: &C) -> Option<&MuCell<Item>> {
     match item.borrow().typed {
         Some(ref typed) if typed.is::<H>() => return Some(item),
         Some(ref typed) => {
@@ -399,7 +400,7 @@ fn get_or_parse<H: Header + HeaderFormat>(item: &MuCell<Item>) -> Option<&MuCell
         _ => ()
     }
 
-    let worked = item.try_mutate(parse::<H>);
+    let worked = item.try_mutate(|&mut h| parse::<H, C>(h, ctx));
     debug_assert!(worked, "item.try_mutate should return true");
     if item.borrow().typed.is_some() {
         Some(item)
@@ -408,7 +409,7 @@ fn get_or_parse<H: Header + HeaderFormat>(item: &MuCell<Item>) -> Option<&MuCell
     }
 }
 
-fn get_or_parse_mut<H: Header + HeaderFormat>(item: &mut MuCell<Item>) -> Option<&mut MuCell<Item>> {
+fn get_or_parse_mut<H: Header + HeaderFormat, C: HttpContext>(item: &mut MuCell<Item>, ctx: &C) -> Option<&mut MuCell<Item>> {
     let is_correct_type = match item.borrow().typed {
         Some(ref typed) if typed.is::<H>() => Some(true),
         Some(ref typed) => {
@@ -424,7 +425,7 @@ fn get_or_parse_mut<H: Header + HeaderFormat>(item: &mut MuCell<Item>) -> Option
         None => ()
     }
 
-    parse::<H>(item.borrow_mut());
+    parse::<H, C>(item.borrow_mut(), ctx);
     if item.borrow().typed.is_some() {
         Some(item)
     } else {
@@ -432,9 +433,9 @@ fn get_or_parse_mut<H: Header + HeaderFormat>(item: &mut MuCell<Item>) -> Option
     }
 }
 
-fn parse<H: Header + HeaderFormat>(item: &mut Item) {
+fn parse<H: Header + HeaderFormat, C: HttpContext>(item: &mut Item, ctx: &C) {
     item.typed = match item.raw {
-        Some(ref raw) => match Header::parse_header(&raw[]) {
+        Some(ref raw) => match Header::parse_header(&raw[], ctx as &HttpContext) {
             Some::<H>(h) => Some(box h as Box<HeaderFormat + Send + Sync>),
             None => None
         },

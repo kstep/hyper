@@ -2,6 +2,7 @@ use std::fmt::{self};
 
 use header;
 use header::shared;
+use context::HttpContext;
 
 #[derive(Clone)]
 struct AccessControlAllowHeaders(pub Vec<String>);
@@ -12,7 +13,7 @@ impl header::Header for AccessControlAllowHeaders {
         "Access-Control-Allow-Headers"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<AccessControlAllowHeaders> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<AccessControlAllowHeaders> {
         shared::from_comma_delimited(raw).map(AccessControlAllowHeaders)
     }
 }

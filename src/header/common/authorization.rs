@@ -3,6 +3,7 @@ use std::str::{FromStr, from_utf8};
 use std::ops::{Deref, DerefMut};
 use serialize::base64::{ToBase64, FromBase64, Standard, Config, Newline};
 use header::{Header, HeaderFormat};
+use context::HttpContext;
 
 /// The `Authorization` header field.
 #[derive(Clone, PartialEq, Show)]
@@ -27,7 +28,7 @@ impl<S: Scheme> Header for Authorization<S> {
         "Authorization"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Authorization<S>> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Authorization<S>> {
         if raw.len() == 1 {
             match (from_utf8(unsafe { &raw[].get_unchecked(0)[] }), Scheme::scheme(None::<S>)) {
                 (Ok(header), Some(scheme))

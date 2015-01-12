@@ -1,6 +1,7 @@
 use header::{Header, HeaderFormat};
 use std::fmt::{self, Show};
 use header::shared::util::from_one_raw_str;
+use context::HttpContext;
 
 /// The `Location` header.
 ///
@@ -23,7 +24,7 @@ impl Header for Location {
         "Location"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Location> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Location> {
         from_one_raw_str(raw).map(|s| Location(s))
     }
 }

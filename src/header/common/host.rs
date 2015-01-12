@@ -2,6 +2,7 @@ use header::{Header, HeaderFormat};
 use Port;
 use std::fmt;
 use header::shared::util::from_one_raw_str;
+use context::HttpContext;
 
 /// The `Host` header.
 ///
@@ -23,7 +24,7 @@ impl Header for Host {
         "Host"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Host> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Host> {
         from_one_raw_str(raw).and_then(|mut s: String| {
             // FIXME: use rust-url to parse this
             // https://github.com/servo/rust-url/issues/42

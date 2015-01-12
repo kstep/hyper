@@ -8,6 +8,7 @@ use std::io::net::ip::Ipv4Addr;
 use hyper::server::{Request, Response, Server};
 use hyper::header::Headers;
 use hyper::Client;
+use hyper::HttpContext;
 
 fn listen() -> hyper::server::Listening {
     let server = Server::http(Ipv4Addr(127, 0, 0, 1), 0);
@@ -37,7 +38,7 @@ impl hyper::header::Header for Foo {
     fn header_name(_: Option<Foo>) -> &'static str {
         "x-foo"
     }
-    fn parse_header(_: &[Vec<u8>]) -> Option<Foo> {
+    fn parse_header(_: &[Vec<u8>], _: &HttpContext) -> Option<Foo> {
         None
     }
 }

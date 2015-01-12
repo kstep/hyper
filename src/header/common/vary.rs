@@ -2,6 +2,7 @@ use header::{Header, HeaderFormat};
 use std::fmt::{self};
 use header::shared::util::{from_comma_delimited, fmt_comma_delimited, from_one_raw_str};
 use unicase::UniCase;
+use context::HttpContext;
 
 /// The `Allow` header.
 /// See also https://tools.ietf.org/html/rfc7231#section-7.1.4
@@ -19,7 +20,7 @@ impl Header for Vary {
         "Vary"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Vary> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Vary> {
         from_one_raw_str(raw).and_then(|s: String| {
             let slice = &s[];
             match slice {

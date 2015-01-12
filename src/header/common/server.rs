@@ -1,6 +1,7 @@
 use header::{Header, HeaderFormat};
 use std::fmt::{self, Show};
 use header::shared::util::from_one_raw_str;
+use context::HttpContext;
 
 /// The `Server` header field.
 ///
@@ -15,7 +16,7 @@ impl Header for Server {
         "Server"
     }
 
-    fn parse_header(raw: &[Vec<u8>]) -> Option<Server> {
+    fn parse_header(raw: &[Vec<u8>], ctx: &HttpContext) -> Option<Server> {
         from_one_raw_str(raw).map(|s| Server(s))
     }
 }

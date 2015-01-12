@@ -9,7 +9,7 @@ use std::io::net::ip::SocketAddr;
 use std::os;
 use std::path::BytesContainer;
 
-use hyper::net;
+use hyper::{net, HttpContext};
 
 static README: &'static [u8] = include_bytes!("../README.md");
 
@@ -55,7 +55,7 @@ impl hyper::header::Header for Foo {
     fn header_name(_: Option<Foo>) -> &'static str {
         "x-foo"
     }
-    fn parse_header(_: &[Vec<u8>]) -> Option<Foo> {
+    fn parse_header(_: &[Vec<u8>], _: &HttpContext) -> Option<Foo> {
         None
     }
 }
