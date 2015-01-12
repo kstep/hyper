@@ -10,6 +10,8 @@ use header;
 use header::common;
 use http::{CR, LF, LINE_ENDING, HttpWriter};
 use http::HttpWriter::{ThroughWriter, ChunkedWriter, SizedWriter};
+use context::HttpContext;
+use url::Url;
 use status;
 use net::{Fresh, Streaming};
 use version;
@@ -31,9 +33,6 @@ impl<'a, W> Response<'a, W> {
     #[inline]
     pub fn status(&self) -> status::StatusCode { self.status }
 
-    /// The headers of this response.
-    pub fn headers(&self) -> &header::Headers { &self.headers }
-
     /// Construct a Response from its constituent parts.
     pub fn construct(version: version::HttpVersion,
                      body: HttpWriter<&'a mut (Writer + 'a)>,
@@ -52,6 +51,16 @@ impl<'a, W> Response<'a, W> {
                                  status::StatusCode, header::Headers) {
         (self.version, self.body, self.status, self.headers)
     }
+}
+
+impl<'a, W> HttpContext for Response<'a, W> {
+    /// The headers of this response.
+    #[inline]
+    fn headers(&self) -> &header::Headers { &self.headers }
+
+    /// Base URL
+    #[inline]
+    fn base_url(&self) -> Option<&Url> { None }
 }
 
 impl<'a> Response<'a, Fresh> {

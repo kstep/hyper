@@ -8,6 +8,8 @@ use header::common::transfer_encoding::Encoding::Chunked;
 use net::{NetworkStream, HttpStream};
 use http::{read_status_line, HttpReader, RawStatus};
 use http::HttpReader::{SizedReader, ChunkedReader, EofReader};
+use url::Url;
+use context::HttpContext;
 use status;
 use version;
 use HttpResult;
@@ -84,6 +86,16 @@ impl Response {
     pub fn into_inner(self) -> Box<NetworkStream + Send> {
         self.body.unwrap().into_inner()
     }
+}
+
+impl HttpContext for Response {
+    /// Read the Request headers.
+    #[inline]
+    fn headers(&self) -> &header::Headers { &self.headers }
+
+    /// Base URL
+    #[inline]
+    fn base_url(&self) -> Option<&Url> { None }
 }
 
 impl Reader for Response {

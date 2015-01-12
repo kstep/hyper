@@ -9,6 +9,7 @@ use header::common::{self, Host};
 use net::{NetworkStream, NetworkConnector, HttpConnector, Fresh, Streaming};
 use http::{HttpWriter, LINE_ENDING};
 use http::HttpWriter::{ThroughWriter, ChunkedWriter, SizedWriter, EmptyWriter};
+use context::HttpContext;
 use version;
 use HttpResult;
 use client::{Response, get_host_and_port};
@@ -28,13 +29,19 @@ pub struct Request<W> {
 }
 
 impl<W> Request<W> {
-    /// Read the Request headers.
-    #[inline]
-    pub fn headers(&self) -> &Headers { &self.headers }
-
     /// Read the Request method.
     #[inline]
     pub fn method(&self) -> method::Method { self.method.clone() }
+}
+
+impl<W> HttpContext for Request<W> {
+    /// Read the Request headers.
+    #[inline]
+    fn headers(&self) -> &Headers { &self.headers }
+
+    /// Base URL
+    #[inline]
+    fn base_url(&self) -> Option<&Url> { Some(&self.url) }
 }
 
 impl Request<Fresh> {

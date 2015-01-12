@@ -13,6 +13,8 @@ use header::common::{ContentLength, TransferEncoding};
 use http::{read_request_line};
 use http::HttpReader;
 use http::HttpReader::{SizedReader, ChunkedReader, EmptyReader};
+use context::HttpContext;
+use url::Url;
 use uri::RequestUri;
 
 /// A request bundles several parts of an incoming `NetworkStream`, given to a `Handler`.
@@ -30,6 +32,20 @@ pub struct Request<'a> {
     body: HttpReader<&'a mut (Reader + 'a)>
 }
 
+impl<'a> HttpContext for Request<'a> {
+    /// The headers of this response.
+    #[inline]
+    fn headers(&self) -> &Headers { &self.headers }
+
+    /// Base URL
+    #[inline]
+    fn base_url(&self) -> Option<&Url> {
+        match self.uri {
+            RequestUri::AbsoluteUri(ref url) => Some(url),
+            _ => None
+        }
+    }
+}
 
 impl<'a> Request<'a> {
 

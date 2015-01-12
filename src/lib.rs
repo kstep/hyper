@@ -168,6 +168,7 @@ macro_rules! inspect(
 #[macro_use]
 mod mock;
 
+pub mod context;
 pub mod client;
 pub mod method;
 pub mod header;
